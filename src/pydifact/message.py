@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    pydifact - a python edifact library
 #    Copyright (C) 2017-2018  Christian González
 #
@@ -13,6 +14,8 @@
 #
 #    You should have received a copy of the GNU Lesser General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+from __future__ import with_statement
+from __future__ import absolute_import
 import collections
 
 from pydifact.parser import Parser
@@ -20,9 +23,10 @@ from pydifact.segments import Segment
 from pydifact.serializer import Serializer
 from pydifact.control import Characters
 import codecs
+from io import open
 
-class Message:
-    """Represent an EDI message for both reading and writing."""
+class Message(object):
+    u"""Represent an EDI message for both reading and writing."""
 
     def __init__(self):
 
@@ -33,8 +37,8 @@ class Message:
         self.has_una_segment = False
 
     @classmethod
-    def from_file(cls, file: str, encoding: str = 'iso8859-1') -> 'Message':
-        """Create a Message instance from a file.
+    def from_file(cls, file, encoding = u'iso8859-1'):
+        u"""Create a Message instance from a file.
 
         Raises FileNotFoundError if filename is not found.
         :param encoding: an 
@@ -50,8 +54,8 @@ class Message:
         return cls.from_str(message)
 
     @classmethod
-    def from_str(cls, string: str) -> 'Message':
-        """Create a Message instance from a string.
+    def from_str(cls, string):
+        u"""Create a Message instance from a string.
         :param string: The EDI message content
         :rtype: Message
         """
@@ -60,8 +64,8 @@ class Message:
         return cls.from_segments(segments)
 
     @classmethod
-    def from_segments(cls, segments: list or collections.Iterable) -> 'Message':
-        """Create a new Message instance from a iterable list of segments.
+    def from_segments(cls, segments):
+        u"""Create a new Message instance from a iterable list of segments.
 
         :param segments: The segments of the message
         :type segments: list/iterable of Segment
@@ -72,8 +76,8 @@ class Message:
         # with the added segments
         return cls().add_segments(segments)
 
-    def get_segments(self, name: str) -> list:
-        """Get all the segments that match the requested name.
+    def get_segments(self, name):
+        u"""Get all the segments that match the requested name.
         :param name: The name of the segment to return
         :rtype: list of Segment
         """
@@ -81,8 +85,8 @@ class Message:
             if segment.tag == name:
                 yield segment
 
-    def get_segment(self, name: str) -> Segment or None:
-        """Get the first segment that matches the requested name.
+    def get_segment(self, name):
+        u"""Get the first segment that matches the requested name.
 
          :return: The requested segment, or None if not found
         :param name: The name of the segment to return
@@ -92,8 +96,8 @@ class Message:
 
         return None
 
-    def add_segments(self, segments: list or collections.Iterable) -> 'Message':
-        """Add multiple segments to the message.
+    def add_segments(self, segments):
+        u"""Add multiple segments to the message.
 
         :param segments: The segments to add
         :type segments: list or iterable of Segments
@@ -103,20 +107,20 @@ class Message:
 
         return self
 
-    def add_segment(self, segment: Segment) -> 'Message':
-        """Append a segment to the message.
+    def add_segment(self, segment):
+        u"""Append a segment to the message.
 
         :param segment: The segment to add
         """
-        if segment.tag == "UNA":
+        if segment.tag == u"UNA":
             self.has_una_segment = True
         self.segments.append(segment)
         return self
 
-    def serialize(self) -> str:
-        """Serialize all the segments added to this object."""
+    def serialize(self):
+        u"""Serialize all the segments added to this object."""
         return Serializer().serialize(self.segments, self.has_una_segment)
 
-    def __str__(self) -> str:
-        """Allow the object to be serialized by casting to a string."""
+    def __str__(self):
+        u"""Allow the object to be serialized by casting to a string."""
         return self.serialize()

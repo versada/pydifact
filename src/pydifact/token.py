@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    pydifact - a python edifact library
 #    Copyright (C) 2017-2018  Christian González
 #
@@ -13,11 +14,12 @@
 #
 #    You should have received a copy of the GNU Lesser General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+from __future__ import absolute_import
 from enum import Enum
 
 
-class Token:
-    """Represents a block of characters in the message.
+class Token(object):
+    u"""Represents a block of characters in the message.
 
     This could be content, a data separator (usually +),
     a component data separator (usually :), or a segment terminator (usually ').
@@ -29,15 +31,15 @@ class Token:
         DATA_SEPARATOR = 13         # default +
         TERMINATOR = 14             # default '
 
-    def __init__(self, token_type: Type, value: str):
-        """Creates a Token with a type and a value"""
+    def __init__(self, token_type, value):
+        u"""Creates a Token with a type and a value"""
         assert type(token_type) == Token.Type
 
         self.type = token_type
         self.value = value
 
-    def __str__(self) -> str:
-        return "'{}' ({})".format(self.value, self.type.name)
+    def __str__(self):
+        return u"'{}' ({})".format(self.value, self.type.name)
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other):
         return self.type == other.type and self.value == other.value

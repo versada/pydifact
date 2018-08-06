@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    pydifact - a python edifact library
 #    Copyright (C) 2017-2018  Christian González
 #
@@ -13,24 +14,25 @@
 #
 #    You should have received a copy of the GNU Lesser General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+from __future__ import absolute_import
 from pydifact.token import Token
 from pydifact.control.characters import Characters
 
 
-class Tokenizer:
-    """Convert EDI messages into tokens for parsing."""
+class Tokenizer(object):
+    u"""Convert EDI messages into tokens for parsing."""
 
     def __init__(self):
-        super().__init__()
+        super(Tokenizer, self).__init__()
 
         # The message that we are tokenizing.
-        self._message = ""
+        self._message = u""
 
         # The current character from the message we are dealing with.
-        self._char = ""
+        self._char = u""
 
         # The stored characters for the next token.
-        self._string = ""
+        self._string = u""
 
         # bool isEscaped If the current character has been escaped.
         self.isEscaped = False
@@ -38,8 +40,8 @@ class Tokenizer:
         # The control characters for the message
         self.characters = None
 
-    def get_tokens(self, message: str, characters: Characters) -> list:
-        """Convert the passed message into tokens.
+    def get_tokens(self, message, characters):
+        u"""Convert the passed message into tokens.
         :param characters:
         :param message: The EDI message
         :return: Token[]
@@ -47,7 +49,7 @@ class Tokenizer:
 
         self.characters = characters
         self._char = None
-        self._string = ''
+        self._string = u''
         self._message = message
         self._message_index = 0
         self.read_next_char()
@@ -62,8 +64,8 @@ class Tokenizer:
 
         return tokens
 
-    def read_next_char(self) -> None:
-        """Read the next character from the message.
+    def read_next_char(self):
+        u"""Read the next character from the message.
 
         If the character is an escape character, set the isEscaped flag to
         True, get the one after it and return that."""
@@ -80,8 +82,8 @@ class Tokenizer:
             self._char = self.get_next_char()
             self.isEscaped = True
 
-    def get_next_char(self) -> str:
-        """Get the next character from the message."""
+    def get_next_char(self):
+        u"""Get the next character from the message."""
 
         # FIXME: this is pretty wasteful. Maybe use a list in the first place?
         # imagine the string is 2Mb big.
@@ -89,8 +91,8 @@ class Tokenizer:
         self._message_index += 1
         return char
 
-    def get_next_token(self) -> Token or None:
-        """Get the next token from the message."""
+    def get_next_token(self):
+        u"""Get the next token from the message."""
 
         if self.end_of_message():
             return None
@@ -112,21 +114,21 @@ class Tokenizer:
                 token = Token(Token.Type.TERMINATOR, self.extract_stored_chars())
 
                 # Ignore any trailing space after the end of the segment
-                while self._char in ["\r", "\n"]:
+                while self._char in [u"\r", u"\n"]:
                     self.read_next_char()
 
                 return token
 
         while not self.is_control_character():
             if self.end_of_message():
-                raise RuntimeError("Unexpected end of EDI message")
+                raise RuntimeError(u"Unexpected end of EDI message")
 
             self.store_current_char_and_read_next()
 
         return Token(Token.Type.CONTENT, self.extract_stored_chars())
 
-    def is_control_character(self) -> bool:
-        """Check if the current character is a control character."""
+    def is_control_character(self):
+        u"""Check if the current character is a control character."""
 
         if self.isEscaped:
             return False
@@ -137,21 +139,21 @@ class Tokenizer:
             self.characters.segment_terminator
             ]
 
-    def store_current_char_and_read_next(self) -> None:
-        """Store the current character and read the
+    def store_current_char_and_read_next(self):
+        u"""Store the current character and read the
         next one from the message."""
 
         self._string += self._char
         self.read_next_char()
 
-    def extract_stored_chars(self) -> str:
-        """Get the previously stored characters and empty the store."""
+    def extract_stored_chars(self):
+        u"""Get the previously stored characters and empty the store."""
 
         string = self._string
-        self._string = ""
+        self._string = u""
         return string
 
-    def end_of_message(self) -> bool:
-        """Check if we've reached the end of the message"""
+    def end_of_message(self):
+        u"""Check if we've reached the end of the message"""
 
         return len(self._char) == 0

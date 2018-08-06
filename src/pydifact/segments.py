@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    pydifact - a python edifact library
 #    Copyright (C) 2017-2018  Christian González
 #
@@ -15,40 +16,40 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-class Segment:
-    """Represent a segment of an EDI message."""
+class Segment(object):
+    u"""Represent a segment of an EDI message."""
 
-    def __init__(self, tag: str, *elements):
-        """Create a new instance.
+    def __init__(self, tag, *elements):
+        u"""Create a new instance.
         :param str tag: The code/tag of the segment.
         :param list elements: The data elements for this segment, as list.
         """
-        assert type(tag) == str
+        assert type(tag) == unicode
         self.tag = tag
 
-        """The data elements for this segment.
+        u"""The data elements for this segment.
         this is converted to a list (due to the fact that python creates a tuple
         when passing a variable arguments list to a method)
         """
         self.elements = list(elements)
 
-    def __str__(self) -> str:
-        """Returns the Segment in Python list printout"""
-        return '\'{}\' EDI segment: {}'.format(self.tag, str(self.elements))
+    def __str__(self):
+        u"""Returns the Segment in Python list printout"""
+        return u'\'{}\' EDI segment: {}'.format(self.tag, unicode(self.elements))
 
-    def __repr__(self) -> str:
-        return self.tag + " segment: " + str(self.elements)
+    def __repr__(self):
+        return self.tag + u" segment: " + unicode(self.elements)
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other):
         return type(self) == type(other) \
                and list(self.elements) == list(other.elements)
 
 
-class SegmentFactory:
-    """Factory for producing segments."""
+class SegmentFactory(object):
+    u"""Factory for producing segments."""
 
-    def create_segment(self, characters: str, name: str, *elements: list) -> Segment:
-        """Create a new instance of the relevant class type.
+    def create_segment(self, characters, name, *elements):
+        u"""Create a new instance of the relevant class type.
 
         :param characters: The control characters
         :param name: The name of the segment

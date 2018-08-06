@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    pydifact - a python edifact library
 #    Copyright (C) 2017-2018  Christian González
 #
@@ -13,4 +14,5 @@
 #
 #    You should have received a copy of the GNU Lesser General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+from __future__ import absolute_import
 from pydifact import message, parser, segments, serializer, token, tokenizer

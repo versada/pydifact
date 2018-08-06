@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    pydifact - a python edifact library
 #    Copyright (C) 2017-2018  Christian González
 #
@@ -14,24 +15,25 @@
 #    You should have received a copy of the GNU Lesser General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import absolute_import
 from pydifact.tokenizer import Tokenizer
 from pydifact.token import Token
 from pydifact.segments import Segment, SegmentFactory
 from pydifact.control import Characters
 
 
-class Parser:
-    """Parse EDI messages into a list of segments."""
+class Parser(object):
+    u"""Parse EDI messages into a list of segments."""
 
-    def __init__(self, factory: SegmentFactory = None):
+    def __init__(self, factory = None):
         if factory is None:
             factory = SegmentFactory()
 
         self.factory = factory
         self.characters = Characters()
 
-    def parse(self, message: str, characters: Characters = None) -> list:
-        """Parse the message into a list of segments.
+    def parse(self, message, characters = None):
+        u"""Parse the message into a list of segments.
 
         :param characters: the control characters to use, if there is no
                 UNA segment present
@@ -44,14 +46,14 @@ class Parser:
         # If there is a UNA token, take the following 6 characters
         # unconditionally, save them as token and use it as control characters
         # for further parsing
-        if message[0:3] == 'UNA':
+        if message[0:3] == u'UNA':
             control_chars = message[3:9]
-            tokens.append(Token(Token.Type.CONTENT, 'UNA'))
+            tokens.append(Token(Token.Type.CONTENT, u'UNA'))
             tokens.append(Token(Token.Type.CTRL_CHARS, control_chars))
 
             # remove the UNA segment from the string
-            message = message[9:].lstrip("\r\n")
-            self.characters = Characters.from_str('UNA' + control_chars)
+            message = message[9:].lstrip(u"\r\n")
+            self.characters = Characters.from_str(u'UNA' + control_chars)
 
         else:
             # if no UNA header present, use default control characters
@@ -64,9 +66,9 @@ class Parser:
         return segments
 
     @staticmethod
-    def get_control_characters(message: str,
-                               characters: Characters = None) -> Characters:
-        """Read the UNA segment from the passed string.
+    def get_control_characters(message,
+                               characters = None):
+        u"""Read the UNA segment from the passed string.
 
         :param message: a valid EDI message string, or UNA segment string,
                         to extract the control characters from
@@ -85,7 +87,7 @@ class Parser:
         # continues with cyrillic or UTF-16.
 
         # If it does not exist, return a default.
-        if not message[:3] == "UNA":
+        if not message[:3] == u"UNA":
             return characters
 
         # Get the character definitions
@@ -101,10 +103,10 @@ class Parser:
 
         return characters
 
-    def convert_tokens_to_segments(self, tokens: list,
-                                   characters: Characters,
-                                   with_una: bool = False):
-        """Convert the tokenized message into an array of segments.
+    def convert_tokens_to_segments(self, tokens,
+                                   characters,
+                                   with_una = False):
+        u"""Convert the tokenized message into an array of segments.
         :param with_una: whether the UNA segment should be included
         :param tokens: The tokens that make up the message
         :param characters: the control characters to use
@@ -139,7 +141,7 @@ class Parser:
                 if token.type == Token.Type.TERMINATOR:
                     in_segment = False
                     if len(data_element) == 0:  # empty element
-                        data_element = ''
+                        data_element = u''
                     if len(data_element) == 1:
                         # use a str instead of a list
                         data_element = data_element[0]
@@ -159,7 +161,7 @@ class Parser:
                 in_segment = True
 
                 # If we're in the UNA segment, do something special
-                if token.value == 'UNA':
+                if token.value == u'UNA':
                     is_una_segment = True
 
             # Whenever we reach a data separator (+), we add the currently
@@ -167,7 +169,7 @@ class Parser:
             # data_element to an empty list []
             if token.type == Token.Type.DATA_SEPARATOR:
                 if len(data_element) == 0:  # empty element
-                    data_element = ''
+                    data_element = u''
                 elif len(data_element) == 1:
                     data_element = data_element[0]
 
@@ -187,8 +189,8 @@ class Parser:
 
             # here we can be sure that the token value is normal "content"
             # first backfill empty strings for skipped component data (:::)
-            for i in range(1, empty_component_counter):
-                data_element.append('')
+            for i in xrange(1, empty_component_counter):
+                data_element.append(u'')
 
             data_element.append(token.value)
             empty_component_counter = 0

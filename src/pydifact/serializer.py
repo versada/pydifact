@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    pydifact - a python edifact library
 #    Copyright (C) 2017-2018  Christian González
 #
@@ -14,32 +15,34 @@
 #    You should have received a copy of the GNU Lesser General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import absolute_import
 from pydifact.control.characters import Characters
 import re
+from itertools import imap
 
 
-class Serializer:
-    """Serialize a bunch of segments into an EDI message string."""
+class Serializer(object):
+    u"""Serialize a bunch of segments into an EDI message string."""
 
-    def __init__(self, characters: Characters = None):
-        super().__init__()
+    def __init__(self, characters = None):
+        super(Serializer, self).__init__()
         if characters is None:
             characters = Characters()
 
         self.characters = characters
 
-    def serialize(self, segments: list, with_una: bool = False) -> str:
-        """Serialize all the passed segments.
+    def serialize(self, segments, with_una = False):
+        u"""Serialize all the passed segments.
 
         :param segments: a list of segments to serialize
         :param with_una: flag if a UNA header should be written
         """
 
-        message = ''
+        message = u''
 
         if with_una:
             # create an EDIFACT header
-            message = "UNA"
+            message = u"UNA"
             message += self.characters.component_separator
             message += self.characters.data_separator
             message += self.characters.decimal_point
@@ -50,7 +53,7 @@ class Serializer:
         # iter through all segments
         for segment in segments:
             # skip the UNA segment as we already have written it if requested
-            if segment.tag == 'UNA':
+            if segment.tag == u'UNA':
                 continue
             message += segment.tag
             for element in segment.elements:
@@ -66,13 +69,13 @@ class Serializer:
 
         return message
 
-    def escape(self, string: str) -> str:
-        """Escapes control characters.
+    def escape(self, string):
+        u"""Escapes control characters.
 
         :param string the string to be escaped
         """
 
-        assert(type(string) == str)
+        assert(type(string) == unicode)
 
         characters = [
             self.characters.escape_character,
@@ -87,6 +90,6 @@ class Serializer:
         # Thanks to "Bor González Usach" for this wonderful piece of code:
         # https://gist.github.com/bgusach/a967e0587d6e01e889fd1d776c5f3729
         substrs = sorted(replace_map, key=len, reverse=True)
-        regexp = re.compile('|'.join(map(re.escape, substrs)))
+        regexp = re.compile(u'|'.join(imap(re.escape, substrs)))
 
         return regexp.sub(lambda match: replace_map[match.group(0)], string)
